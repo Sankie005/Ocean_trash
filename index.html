@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ocean Trash Depths</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster+Two:wght@400;700&family=Ocean+Sans&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,13 +13,13 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Ocean Sans', 'Arial', sans-serif; /* Fallback to Arial */
             background: linear-gradient(to bottom, #87CEEB 0%, #4682B4 20%, #191970 50%, #000080 80%, #000000 100%);
             color: white;
             overflow-x: hidden;
             cursor: grab;
-            /* Allow scrolling for the entire body to enable depth simulation */
             height: 1000vh; /* This will be dynamically set by JS */
+            transition: background-color 0.5s ease-out; /* Smooth background transitions */
         }
 
         body:active {
@@ -26,12 +27,12 @@
         }
 
         .container {
-            position: fixed; /* Keep container fixed and scroll the body */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            overflow: hidden; /* Hide overflow from ocean-content translation */
+            overflow: hidden;
         }
 
         .depth-indicator {
@@ -41,30 +42,30 @@
             background: rgba(0, 0, 0, 0.7);
             padding: 15px 20px;
             border-radius: 10px;
-            font-size: 24px;
+            font-size: 28px; /* Slightly larger */
             font-weight: bold;
             z-index: 1000;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4); /* Thicker, more prominent border */
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); /* Glowing effect */
+            font-family: 'Lobster Two', cursive; /* Applied to indicator */
         }
 
         .ocean-content {
             position: absolute;
             width: 100%;
-            /* This will be translated by JS to simulate depth */
-            transform: translateY(0px); 
-            will-change: transform; /* Optimize for smooth animation */
+            transform: translateY(0px);
+            will-change: transform;
         }
 
         .depth-zone {
             position: relative;
             width: 100%;
-            height: 120vh; /* Each zone now has a defined height */
+            height: 120vh;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            /* Background gradients for visual depth change */
             transition: background 0.5s ease-out;
         }
 
@@ -73,11 +74,13 @@
             top: 10%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 3em;
+            font-size: 4em; /* Larger zone titles */
             font-weight: bold;
             text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 255, 255, 0.3); /* Enhanced shadow and glow */
             z-index: 100;
+            font-family: 'Lobster Two', cursive; /* Applied to zone titles */
+            letter-spacing: 2px; /* Add some spacing */
         }
 
         .trash-item {
@@ -85,25 +88,23 @@
             cursor: pointer;
             transition: all 0.3s ease;
             animation: float 6s ease-in-out infinite;
-            z-index: 50; /* Ensure trash is above zone background but below popup */
+            z-index: 50;
         }
 
         .trash-item:hover {
-            transform: scale(1.2);
-            filter: brightness(1.3);
+            transform: scale(1.3) rotate(5deg); /* More pronounced hover effect */
+            filter: brightness(1.5) drop-shadow(0 0 10px rgba(255, 255, 0, 0.7)); /* Brighter and glowing */
         }
 
-        .trash-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .trash-item span { /* Targeting the emoji directly */
+            font-size: 40px; /* Base size for trash emojis */
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-10px) rotate(2deg); }
-            50% { transform: translateY(-5px) rotate(-1deg); }
-            75% { transform: translateY(-15px) rotate(1deg); }
+            25% { transform: translateY(-15px) rotate(3deg); } /* More movement */
+            50% { transform: translateY(-8px) rotate(-2deg); }
+            75% { transform: translateY(-20px) rotate(2deg); }
         }
 
         .info-popup {
@@ -111,36 +112,52 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
+            background: rgba(0, 0, 0, 0.95); /* Darker background */
+            padding: 40px; /* More padding */
+            border-radius: 20px; /* More rounded corners */
+            max-width: 600px; /* Wider popup */
             z-index: 2000;
             display: none;
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(25px); /* Stronger blur */
+            border: 3px solid rgba(173, 216, 230, 0.6); /* Lighter blue border with more opacity */
+            box-shadow: 0 0 30px rgba(173, 216, 230, 0.8); /* Stronger blue glow */
+            animation: fadeIn 0.5s ease-out; /* Fade in animation */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         .info-popup h3 {
-            color: #ff6b6b;
-            margin-bottom: 15px;
-            font-size: 24px;
+            color: #87CEEB; /* Lighter blue for title */
+            margin-bottom: 20px;
+            font-size: 32px; /* Larger title */
+            font-family: 'Lobster Two', cursive;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
         }
 
         .info-popup p {
-            line-height: 1.6;
-            margin-bottom: 10px;
+            line-height: 1.8; /* More comfortable reading */
+            margin-bottom: 15px;
+            font-size: 18px; /* Larger paragraph text */
+            color: #E0FFFF; /* Light cyan text for info */
         }
 
         .close-popup {
             position: absolute;
-            top: 10px;
-            right: 15px;
+            top: 15px;
+            right: 20px;
             background: none;
             border: none;
             color: white;
-            font-size: 24px;
+            font-size: 32px; /* Larger close button */
             cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .close-popup:hover {
+            transform: rotate(90deg) scale(1.1); /* Spin and grow on hover */
         }
 
         .instructions {
@@ -153,16 +170,19 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 1000;
+            font-size: 1.1em; /* Slightly larger instructions */
+            line-height: 1.5;
         }
 
         .bubble {
-            position: fixed; /* Bubbles should float over the entire viewport */
+            position: fixed;
             width: 10px;
             height: 10px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4); /* Brighter bubbles */
             border-radius: 50%;
             animation: bubble 8s linear infinite;
-            z-index: 1; /* Bubbles behind trash and content */
+            z-index: 1;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.6); /* Soft glow for bubbles */
         }
 
         @keyframes bubble {
@@ -172,19 +192,28 @@
             }
             10% {
                 opacity: 1;
+                transform: translateY(calc(100vh - 50px)) scale(0.5); /* Start scaling up earlier */
             }
             90% {
                 opacity: 1;
             }
             100% {
-                transform: translateY(-100px) scale(1);
+                transform: translateY(-100px) scale(1.2); /* Slightly larger at top */
                 opacity: 0;
             }
         }
 
-        /* Depth-specific background colors for a smooth transition */
-        body { 
-            transition: background-color 0.5s ease-out; /* Smooth background transitions */
+        /* Specific styles for the infamous beer bottle */
+        .beer-bottle-infamous {
+            font-size: 60px !important; /* Make it significantly larger */
+            animation: float 6s ease-in-out infinite, pulsate 2s infinite alternate; /* Add a pulsate effect */
+            text-shadow: 0 0 20px #FFD700, 0 0 30px #FFA500; /* Gold/orange glow */
+            transform-origin: center bottom; /* Anchor for rotation */
+        }
+
+        @keyframes pulsate {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.1); opacity: 1; }
         }
 
     </style>
@@ -362,20 +391,20 @@
             
             // Hadal zone (11000m+)
             {
-             name: "Infamous Beer Bottle",
-             emoji: "🍺",
-             minDepth: 11000, // Assign it to the deepest point
-             maxDepth: 12000, // Keep it within or slightly beyond the deepest range for visibility
-             info: "The infamous beer bottle found at the Challenger Deep! A testament to human impact even at the greatest depths.",
-             stats: "Only one known specimen"
+                name: "Infamous Beer Bottle",
+                emoji: "🍺",
+                minDepth: 11000, // Assign it to the deepest point
+                maxDepth: 12000, // Keep it within or slightly beyond the deepest range for visibility
+                info: "The **infamous beer bottle** found at the **Challenger Deep**! A curious testament to human impact, even at the greatest depths, shimmering with an eerie, timeless glow.",
+                stats: "Only one known specimen (hypothetically observed by intrepid submersibles)"
             },
             {
                 name: "Microplastics",
                 emoji: "🔬",
                 minDepth: 10000, // Starts appearing before Hadal, but prominent here
                 maxDepth: 12000, // Beyond maxDepth for visual representation at the very bottom
-                info: "Even in Earth's deepest trenches, microplastics have been found in marine life.",
-                stats: "Microplastics found in 100% of deep trench samples"
+                info: "Even in Earth's deepest trenches, microplastics have been found in marine life. These tiny fragments are a pervasive and growing threat to the most remote ecosystems.",
+                stats: "Microplastics found in 100% of deep trench samples, a silent pervasive invader."
             }
         ];
 
@@ -388,23 +417,25 @@
             const totalScrollableHeight = body.scrollHeight - window.innerHeight;
 
             trashData.forEach((trash) => {
-                const count = Math.floor(Math.random() * 3) + 2; // 2-4 items per type
+                const count = (trash.name === "Infamous Beer Bottle") ? 1 : Math.floor(Math.random() * 3) + 2; // Only one beer bottle, 2-4 for others
                 
                 for (let i = 0; i < count; i++) {
                     const trashElement = document.createElement('div');
                     trashElement.className = 'trash-item';
-                    trashElement.innerHTML = `<span style="font-size: ${Math.random() * 30 + 20}px">${trash.emoji}</span>`;
+                    trashElement.innerHTML = `<span style="font-size: ${Math.random() * 30 + 30}px">${trash.emoji}</span>`; // Larger base emoji size
                     
+                    if (trash.name === "Infamous Beer Bottle") {
+                        trashElement.classList.add('beer-bottle-infamous');
+                    }
+
                     // Random depth within the trash item's assigned range
                     const randomDepth = Math.random() * (trash.maxDepth - trash.minDepth) + trash.minDepth;
                     
                     // Convert randomDepth (meters) to a pixel position within the scrollable content
-                    // The 'currentDepth' variable scales from 0 to maxDepth as we scroll from 0 to totalScrollableHeight
-                    // So, to place an item at 'randomDepth', its 'top' offset should be proportional to totalScrollableHeight
                     const yPositionPixels = (randomDepth / maxDepth) * totalScrollableHeight;
                     
                     trashElement.style.left = Math.random() * 80 + 10 + '%';
-                    trashElement.style.top = yPositionPixels + 'px'; // Position it relative to ocean-content
+                    trashElement.style.top = yPositionPixels + 'px';
                     trashElement.style.animationDelay = Math.random() * 6 + 's';
                     
                     trashElement.onclick = () => showInfo(trash);
@@ -422,8 +453,7 @@
                     bubble.className = 'bubble';
                     bubble.style.left = Math.random() * 100 + '%';
                     bubble.style.animationDuration = (Math.random() * 4 + 6) + 's';
-                    // Start position for bubble animation (off-screen bottom)
-                    bubble.style.bottom = '-20px'; 
+                    bubble.style.bottom = '-20px'; // Start position for bubble animation (off-screen bottom)
                     body.appendChild(bubble);
                     
                     // Remove bubble after its animation
@@ -465,15 +495,14 @@
             body.style.backgroundColor = backgroundColor;
 
             // Move the entire ocean-content up/down to simulate diving
-            // The scroll position (scrolled) effectively becomes the negative Y translation
             oceanContent.style.transform = `translateY(${-scrolled}px)`;
         }
 
         // Show trash info popup
         function showInfo(trash) {
             document.getElementById('popupTitle').textContent = trash.name;
-            document.getElementById('popupDescription').textContent = trash.info;
-            document.getElementById('popupStats').textContent = trash.stats;
+            document.getElementById('popupDescription').innerHTML = trash.info; // Use innerHTML for bolding
+            document.getElementById('popupStats').innerHTML = trash.stats; // Use innerHTML for bolding
             document.getElementById('infoPopup').style.display = 'block';
         }
 
@@ -493,16 +522,16 @@
                 return;
             }
             isDragging = true;
-            startY = e.pageY; // Use e.pageY directly
+            startY = e.pageY;
             scrollTop = document.documentElement.scrollTop;
             body.style.cursor = 'grabbing';
         });
 
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            e.preventDefault(); // Prevent text selection and other default behaviors
+            e.preventDefault();
             const y = e.pageY;
-            const walk = (startY - y); // Calculate how much to scroll
+            const walk = (startY - y);
             window.scrollTo(0, scrollTop + walk);
         });
 
@@ -524,43 +553,38 @@
             if (e.target.closest('.info-popup') || e.target.closest('.instructions')) {
                 return;
             }
-            e.preventDefault(); // Prevent default touch behaviors like scrolling the entire page
+            e.preventDefault();
             const y = e.touches[0].pageY;
             const walk = (startY - y);
             window.scrollTo(0, scrollTop + walk);
-        }, { passive: false }); // Use passive: false to allow preventDefault
+        }, { passive: false });
 
         // Initialize
         function initializeOcean() {
-            // Set the body's scrollable height based on the total depth zones
-            body.style.height = `${totalOceanContentHeight}vh`; 
+            body.style.height = `${totalOceanContentHeight}vh`;
             generateTrash();
             generateBubbles();
-            updateDepth(); // Initial update
+            updateDepth();
         }
 
         // Event listeners
         window.addEventListener('scroll', updateDepth);
         window.addEventListener('resize', () => {
-            // Re-calculate body height and regenerate trash on resize
             body.style.height = `${totalOceanContentHeight}vh`;
-            generateTrash(); 
+            generateTrash();
             updateDepth();
         });
 
         // Close popup on click outside
         document.addEventListener('click', (e) => {
-            // If the click is outside the popup and not on a trash item
-            if (!e.target.closest('.info-popup') && !e.target.closest('.trash-item')) {
+            if (!e.target.closest('.info-popup') && !e.target.closest('.trash-item') && !e.target.closest('.close-popup')) {
                 closePopup();
             }
         });
 
-
         // Initialize when page loads
         initializeOcean();
 
-        // Smooth scrolling for better UX (optional, can be removed for instant scroll)
         document.documentElement.style.scrollBehavior = 'smooth';
     </script>
 </body>
